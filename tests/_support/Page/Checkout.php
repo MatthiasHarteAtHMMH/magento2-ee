@@ -16,12 +16,16 @@ class Checkout extends Base
      * @var string
      * @since 1.4.1
      */
+
     public $URL = 'index.php/checkout#shipping';
+
     /**
      * @var string
      * @since 1.5.3
      */
-    public $page_specific = 'checkout';
+
+    public $pageSpecific = 'checkout';
+
     /**
      * @var array
      * @since 1.4.1
@@ -49,8 +53,7 @@ class Checkout extends Base
     {
         $I = $this->tester;
         $data_field_values = $I->getDataFromDataFile('tests/_data/CustomerData.json');
-        $I->wait(45);
-        $I->waitForElementVisible($this->getElement('Country'));
+        $I->waitForElementVisible($this->getElement('Country'), 60);
         $I->selectOption($this->getElement('Country'), $data_field_values->country);
         $I->waitForElementVisible($this->getElement('State/Province'));
         $I->selectOption($this->getElement('State/Province'), $data_field_values->state);
@@ -69,19 +72,8 @@ class Checkout extends Base
         $I->waitForElementVisible($this->getElement('Phone Number'));
         $I->fillField($this->getElement('Phone Number'), $data_field_values->phone);
         $I->waitForElementVisible($this->getElement('Next'));
-        $I->wait(4);
+        $I->waitForElementClickable($this->getElement('Next'), 60);
+        $I->wait(10);
         $I->click($this->getElement('Next'));
-    }
-
-    /**
-     * Method getPageSpecific
-     *
-     * @return string
-     *
-     * @since 1.5.3
-     */
-    public function getPageSpecific()
-    {
-        return $this->page_specific;
     }
 }

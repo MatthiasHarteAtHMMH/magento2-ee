@@ -26,6 +26,12 @@ class Base
 
     /**
      * @var string
+     * @since 2.2.0
+     */
+    public $pageSpecific = '';
+
+    /**
+     * @var string
      * @since 1.4.1
      */
     protected $tester;
@@ -73,7 +79,7 @@ class Base
      */
     public function getPageSpecific()
     {
-        return $this->URL;
+        return $this->pageSpecific;
     }
 
     /**
@@ -111,5 +117,27 @@ class Base
      */
     public function prepareCheckout()
     {
+    }
+
+    /**
+     * Method waitUntilLoaded
+     *
+     * @since   2.2.0
+     */
+    public function waitUntilLoaded()
+    {
+        $I = $this->tester;
+        $timeout = 80;
+        $counter = 0;
+        while ($counter <= $timeout) {
+            $I->wait(1);
+            $counter++;
+            $currentUrl = $I->grabFromCurrentUrl();
+            if ($currentUrl != '' && $this->getPageSpecific() != '') {
+                if (strpos($currentUrl, $this->getPageSpecific()) != false) {
+                    break;
+                }
+            }
+        }
     }
 }

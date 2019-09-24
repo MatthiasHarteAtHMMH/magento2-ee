@@ -69,7 +69,6 @@ class AcceptanceTester extends \Codeception\Actor
     {
         switch ($name) {
             case 'Checkout':
-                $this->wait(10);
                 $page = new CheckoutPage($this);
                 break;
             case 'Product3DS':
@@ -79,15 +78,12 @@ class AcceptanceTester extends \Codeception\Actor
                 $page = new ProductNon3DSPage($this);
                 break;
             case 'Verified':
-                $this->wait(45);
                 $page = new VerifiedPage($this);
                 break;
             case 'Order Received':
-                $this->wait(45);
                 $page = new OrderReceivedPage($this);
                 break;
             case 'Payment':
-                $this->wait(45);
                 $page = new PaymentPage($this);
                 break;
             default:
@@ -120,6 +116,7 @@ class AcceptanceTester extends \Codeception\Actor
         // Open the page and initialize required pageObject
         $this->currentPage = $this->selectPage($page);
         $this->amOnPage($this->currentPage->getURL());
+        $this->currentPage->waitUntilLoaded();
     }
 
     /**
@@ -143,6 +140,8 @@ class AcceptanceTester extends \Codeception\Actor
     {
         // Initialize required pageObject WITHOUT checking URL
         $this->currentPage = $this->selectPage($page);
+        $this->currentPage->waitUntilLoaded();
+        $this->wait(3);
         // Check only specific keyword that page URL should contain
         $this->seeInCurrentUrl($this->currentPage->getPageSpecific());
     }
@@ -228,6 +227,8 @@ class AcceptanceTester extends \Codeception\Actor
      */
     public function iSeeInTransactionTable($paymentAction)
     {
+//        wait for a minute for polling to be executed to update transaciton info in the table
+        $this->wait(60);
         $this->seeInDatabase(
             'sales_payment_transaction',
             ['txn_type like' => $this->mappedPaymentActions['tx_table'][$paymentAction]]
@@ -235,9 +236,6 @@ class AcceptanceTester extends \Codeception\Actor
         //check that last transaction in the table is the one under test
         $transactionTypes = $this->getColumnFromDatabaseNoCriteria('sales_payment_transaction', 'txn_type');
         $tempTxType = $this->mappedPaymentActions['tx_table'][$paymentAction];
-        if ($tempTxType) {
-            $tempTxType = 'order';
-        }
         $this->assertEquals(end($transactionTypes), $tempTxType);
     }
 }

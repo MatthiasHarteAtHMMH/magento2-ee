@@ -20,6 +20,12 @@ class Payment extends Base
     public $URL = 'payment';
 
     /**
+     * @var string
+     * @since 2.2.0
+     */
+    public $pageSpecific = 'payment';
+
+    /**
      * @var array
      * @since 1.4.1
      */
@@ -41,8 +47,10 @@ class Payment extends Base
     public function fillCreditCardDetails()
     {
         $I = $this->tester;
-        $I->wait(20);
         $data_field_values = $I->getDataFromDataFile('tests/_data/CardData.json');
+        $I->waitForElementVisible($this->getElement('Wirecard Credit Card'), 60);
+        $I->waitForElementClickable($this->getElement('Wirecard Credit Card'), 60);
+        $I->wait(3);
         $I->selectOption($this->getElement('Wirecard Credit Card'), 'Wirecard Credit Card');
         $I->wait(15);
         try {
